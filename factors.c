@@ -1,16 +1,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void factorize_and_print(long long num) {
-    for(int i = 2; i * i <= num; i++) {
-        if(num % i == 0) {
-            printf("%lld=%d*%lld\n", num, i, num / i);
-            return;
-        }
-    }
-    printf("%lld=%d*%lld\n", num, 1, num);
-}
+int find_divisor(long long int num)
+{
+	long long int factor;
 
+	if (num % 2 == 0)
+	{
+		printf("%llu=%llu*%i\n", num, num / 2, 2);
+		return 0;
+	}
+
+	factor = 3;
+	while (factor * factor <= num)
+	{
+		if (num % factor == 0)
+		{
+			printf("%llu=%llu*%llu\n", num, num / factor, factor);
+			return 0;
+		}
+		else
+			factor += 2;
+	}
+
+	printf("%llu=%llu*%i\n", num, num, 1);
+
+	return 0;
+}
 int main(int argc, char *argv[]) {
     if(argc != 2) {
         printf("Usage: factors <file>\n");
@@ -25,7 +41,7 @@ int main(int argc, char *argv[]) {
 
     long long int num;
     while(fscanf(file, "%lld", &num) == 1) {
-        factorize_and_print(num);
+        find_divisor(num);
     }
 
     fclose(file);
