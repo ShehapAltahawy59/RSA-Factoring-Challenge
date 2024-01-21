@@ -1,36 +1,48 @@
-#!/usr/bin/python3
-"""
-Factorize as many numbers as possible into
-a product of two smaller prime numbers.
+#!/usr/bin/env bash
+#is a challenge
+check_factor()
+{
+	if [ $# -ne 3 ];
+        then
+                args=("$@")
+                count=0
+                num2=1
+                for a in ${args[*]};
+                do
+                        if [ $count -gt 1 ];
+                        then
+                                num2=$(echo $a*$num2 | bc)
+                        fi
+                        count=$((count + 1))
+                done
+        else
+                num2=$3
+        fi
 
-Functions:
-    factorize()
+        num1=$2
+        num=$(echo "$1" | tr ':' '=')
 
-Usage: ./rsa <file>
-    Where <file> is a file containing one natural number to factor.
-Output format: n=p*q
-    p and q are always prime numbers.
-"""
+        result=$(echo "if($num2 > $num1) 1 else 0" | bc)
+	        if ((result == 1)); then
+		        numcp=$num1
+		        num1=$num2
+		        num2=$numcp
+                fi
 
-import sys
-import ctypes
+        echo "$num$num1*$num2"
+}
 
+if [ $# -ne 1 ]
+then
+        echo 'Usage: rsa <file>'
+        exit 1
+else
 
-def factorize():
-    """
-    Factorizes as many numbers as possible into
-    a product of two smaller prime numbers and print them.
-    """
+        while read i
+        do
 
-    c_factors = ctypes.CDLL("./lib_factors.so")
-    c_factors.find_divisor.argtypes = [ctypes.c_long]
-    with open(sys.argv[1]) as f:
-        line = f.readline()
-        while line != '':
-            num = int(line)
-            c_factors.find_divisor(num)
-            line = f.readline()
+                result=$(factor "$i")
+                check_factor $result
 
-
-if __name__ == "__main__":
-    factorize()
+        done < "$1"
+fi
